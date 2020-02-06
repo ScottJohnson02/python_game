@@ -1,19 +1,19 @@
 # Python3 Game
+import rooms
 
-from rooms import *
+
 class Map(object):
 
     room_names = {
-            'intro': Introduction(),
-            'cabin_main_room': CabinMainRoom(),
-            'cabin_bathroom': CabinBathroom(),
-            'cabin_bedroom': CabinBedroom(),
-            'outside_cabin': OutsideCabin(),
-            'river': River(),
-            'village': Village(),
-            'woods': Woods()
+            'intro': rooms.Introduction(),
+            'cabin_main_room': rooms.CabinMainRoom(),
+            'cabin_bathroom': rooms.CabinBathroom(),
+            'cabin_bedroom': rooms.CabinBedroom(),
+            'outside_cabin': rooms.OutsideCabin(),
+            'river': rooms.River(),
+            'village': rooms.Village(),
+            'woods': rooms.Woods()
             }
-
 
     def __init__(self, start_room):
         self.start_room = start_room

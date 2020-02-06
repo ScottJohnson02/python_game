@@ -1,11 +1,9 @@
 # Rooms
-from sys import exit
 from random import randint
 from textwrap import dedent
-from player_stats import *
-prompt = "~> "
-# have classes pass through a parent to check if they can be entered
+import player_stats
 
+# Dictionary of tasks to be completed for morality points
 completed = {
         'drugs': False,
         'cleaned_room': False,
@@ -13,12 +11,17 @@ completed = {
         'cannibals': False
         }
 
+# Other classes will inherit this class it helps keep code DRY
 class InitialRoom(object):
+
     def __init__(self):
         self.directions = []
+
     def dir(self):
         while True:
             action = input('~> ')
+            
+            # Allows help to be available whenever a player needs to know controls
             if action == 'help':
                 print(dedent("""
                     If at any point you are unsure of all available actions just type help
@@ -34,12 +37,16 @@ class InitialRoom(object):
                     no will disagree to something
                     """))
                 action = self.dir()
+
             if action in self.directions:
                 return action
+
             else:
                 print("Not a valid action right now")
 
+# Beginning of game that a player will start at
 class Introduction(InitialRoom):
+
     def enter(self):
         print(dedent("""
             This game will allow you to choose between good and bad
@@ -66,6 +73,7 @@ class Introduction(InitialRoom):
 
 
 class CabinMainRoom(InitialRoom):
+
     def enter(self):
         print(dedent("""
             You are standing in the entrance of a cabin
@@ -100,26 +108,26 @@ class CabinBathroom(InitialRoom):
 
             if action == 'yes':
                 completed['drugs'] = True
-                player.morality -= 5
-                print(dedent("""
+                player_stats.player.morality -= 5
+                print(dedent(f"""
                     After taking the pill your whole body feels amazing
                     There is nothing else in the bathroom to use
-                    Your morality is {player.morality}
+                    Your morality is {player_stats.player.morality}
                     """))
 
             elif action == 'no':
                 print(dedent(f"""
                     You refrained from stealing drugs
-                    Your morality is {player.morality}
+                    Your morality is {player_stats.player.morality}
                     """))
     
-        self.directions = ['j']
         print(dedent("""
             There is nothing else in the bathroom to use
             All you can do is head back
             """))
-
+        self.directions = ['j']
         action = self.dir()
+
         if action == 'j':
             return 'cabin_main_room'
 
@@ -128,34 +136,35 @@ class CabinBedroom(InitialRoom):
 
     def enter(self):
         if completed['cleaned_room'] == False:
-            self.directions = ['yes', 'no']
             print(dedent("""
                 The bedroom is messy
                 Do you clean it?
                 Cleaning the bedroom will increase your morality by 3
                 """))
+            self.directions = ['yes', 'no']
             action = self.dir()
 
             if action == 'yes':
                 completed['cleaned_room'] = True
-                player.morality += 3
+                player_stats.player.morality += 3
+
                 print(dedent(f"""
                     You cleaned the room which made you feel really good
                     There is nothing else to do in the room
-                    Your morality is {player.morality}
+                    Your morality is {player_stats.player.morality}
                     """))
             elif action == 'no':
-                player.morality -= 1
+                player_stats.player.morality -= 1
                 print(dedent(f"""
                     Ha!
                     You left the room messy
                     For doing such an evil thing you lost a morality point
                     There is nothing else to do in the bedroom
-                    Your morality is {player.morality}
+                    Your morality is {player_stats.player.morality}
                     """))
 
-        self.directions = ['j']
         print("There is nothing else to do in the bedroom")
+        self.directions = ['j']
         action = self.dir()
 
         if action == 'j':
@@ -163,6 +172,7 @@ class CabinBedroom(InitialRoom):
 
 
 class OutsideCabin(InitialRoom):
+
     def enter(self):
         print(dedent("""
             It's a beautiful sunny day outside
@@ -184,6 +194,7 @@ class OutsideCabin(InitialRoom):
 
 
 class Woods(InitialRoom):
+
     def enter(self):
         if completed['cannibals'] == False:
             print(dedent("""
@@ -194,33 +205,38 @@ class Woods(InitialRoom):
                 """))
             self.directions = ['yes', 'no']
             action = self.dir()
+
             if action == 'yes':
                 completed['cannibals'] = True
-                player.morality -= 5
+                player_stats.player.morality -= 5
                 print(dedent(f"""
                     You ate the meat and feel full
-                    your new morality is {player.morality}
+                    your new morality is {player_stats.player.morality}
                     They thank you for eating with them and you head back
                     """))
                 return 'outside_cabin'
+
             elif action == 'no':
                 print(dedent("""
                     You screamed like a little girl and ran away from them
                     """))
                 return 'outside_cabin'
+
         print(dedent("""
             You come back to the cannibal tribe and say hello to your friends
             The only direction to go is back
             """))
         self.directions = ['j']
         action = self.dir()
+
         if action == 'j':
             return 'outside_cabin'
 
+
 class River(InitialRoom):
+
     def enter(self):
         if completed['kid_drowning'] == False:
-            self.directions = ['yes', 'no']
             print(dedent("""
                 Upon approaching the river you see a kid drowning
                 He's screaming for help
@@ -228,31 +244,32 @@ class River(InitialRoom):
                 Type yes to save the kid from drowning
                 Type no to pretend like you didn't see him and return to outside the cabin
                 """))
+            self.directions = ['yes', 'no']
             action = self.dir()
 
             if action == 'yes':
                 completed['kid_drowning'] = True
-                player.morality += 10
+                player_stats.player.morality += 10
                 print(dedent(f"""
                     You found some rope next to you and tossed an end to the kid
                     You managed to pull him in and save his life
                     He runs away thanking you
                     This gave you 10 points of mortality
-                    Your morality is {player.morality}
+                    Your morality is {player_stats.player.morality}
                     """))
             elif action == 'no':
                 completed['kid_drowning'] = True
-                player.morality -= 10
+                player_stats.player.morality -= 10
                 print(dedent(f"""
                     You casually just turn around and walk back to outside the cabin
                     After a little while the kid stops screaming for help
                     Shockingly you lose 10 points of morality
-                    Your morality is {player.morality}
+                    Your morality is {player_stats.player.morality}
                     """))
                 return 'outside_cabin'
 
-        self.directions = ['j']
         print("There is nothing to do here anymore")
+        self.directions = ['j']
         action = self.dir()
 
         if action == 'j':
@@ -260,6 +277,7 @@ class River(InitialRoom):
 
 
 class Village(InitialRoom):
+
     def enter(self):
         print(dedent("""
             You enter the village and there's lots of people walking around
@@ -274,19 +292,22 @@ class Village(InitialRoom):
             print(dedent(f"""
                 Woah there sonny!
                 You need a morality score of -50 to enter here
-                You currently have {player.morality}
+                You currently have {player_stats.player.morality}
                 """))
             return 'village'
+
         elif action == 'l':
             print(dedent("""
                 You need a morality score of 50 to enter here
-                You currently have {player.morality}
+                You currently have {player_stats.player.morality}
                 """))
             return 'village'
+
         elif action == 'k':
             print(dedent("""
             Still needs developed
             """))
             return 'village'
+
         elif action == 'j':
             return 'outside_cabin'
