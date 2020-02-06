@@ -4,8 +4,6 @@ from random import randint
 from textwrap import dedent
 from player_stats import *
 prompt = "~> "
-valid_move = "Please choose a valid option -> (h, j, k, l)\n~> "
-valid_choice = "Please choose a valid option -> (yes, no)\n~> "
 # have classes pass through a parent to check if they can be entered
 
 completed = {
@@ -14,9 +12,20 @@ completed = {
         'kid_drowning': False
         }
 
+class InitialRoom(object):
+    def __init__(self):
+        self.directions = []
+    def dir(self):
+        while True:
+            action = input('~> ')
+            if action in self.directions:
+                return action
+            else:
+                print("Not a valid action right now")
 
-class Introduction(object):
+class Introduction(InitialRoom):
     def enter(self):
+        self.directions = ['k']
         print(dedent("""
             This game will allow you to choose between good and bad
             Your choices will determine if you'll enter Heaven or Hell
@@ -34,19 +43,15 @@ class Introduction(object):
             There's a magical door right in front of you
             """))
 
-        action = input(prompt)
-
-        while True:
-
-            if action == 'k':
-                print("The door you came out of slammed shut behind you and disappeared")
-                return 'cabin_main_room'
-            else:
-                action = input(valid_move)
+        action = self.dir()
+        if action == 'k':
+            print("The door you came out of slammed shut behind you and disappeared")
+            return 'cabin_main_room'
 
 
-class CabinMainRoom(object):
+class CabinMainRoom(InitialRoom):
     def enter(self):
+        self.directions = ['k', 'l', 'j']
         print(dedent("""
             You are standing in the entrance of a cabin
             To your right there is a bathroom
@@ -54,26 +59,21 @@ class CabinMainRoom(object):
             In front of you is a door to leave the cabin
             """))
 
-        action = input(prompt)
+        action = self.dir()
 
-        while True:
-            if action == 'k':
-                return 'outside_cabin'
-            elif action == 'l':
-                return 'cabin_bathroom'
-            elif action == 'j':
-                return 'cabin_bedroom'
-            elif action == 'h':
-                print("You can't go that way")
-                action = input(prompt)
-            else:
-                action = input(valid_move)
+        if action == 'k':
+            return 'outside_cabin'
+        elif action == 'l':
+            return 'cabin_bathroom'
+        elif action == 'j':
+            return 'cabin_bedroom'
 
 
-class CabinBathroom(object):
+class CabinBathroom(InitialRoom):
     
     def enter(self):
         if completed['drugs'] == False:
+            self.directions = ['yes', 'no']
             print(dedent("""
                 There is a pill in the bathroom that is only precribed to people with cancer
                 You don't have cancer
@@ -81,122 +81,97 @@ class CabinBathroom(object):
                 Do you take it?
                 Taking it will decrease your morality by 5
                 """))
-            action = input(prompt)
+            action = self.dir()
 
-            while True:
-                if action == 'yes':
-                    completed['drugs'] = True
-                    player.morality -= 5
-                    print(dedent("""
-                        After taking the pill your whole body feels amazing
-                        There is nothing else in the bathroom to use
-                        Your morality is {player.morality}
-                        """))
-                    break
+            if action == 'yes':
+                completed['drugs'] = True
+                player.morality -= 5
+                print(dedent("""
+                    After taking the pill your whole body feels amazing
+                    There is nothing else in the bathroom to use
+                    Your morality is {player.morality}
+                    """))
 
-                elif action == 'no':
-                    print(dedent(f"""
-                        You refrained from stealing drugs
-                        Your morality is {player.morality}
-                        """))
-                    break
-                else:
-                    action = input(valid_choice)
-        
+            elif action == 'no':
+                print(dedent(f"""
+                    You refrained from stealing drugs
+                    Your morality is {player.morality}
+                    """))
+    
+        self.directions = ['j']
         print(dedent("""
             There is nothing else in the bathroom to use
             All you can do is head back
             """))
 
-        action = input(prompt)
-
-        while True:
-            if action == 'j':
-                return 'cabin_main_room'
-
-            elif action == 'h' or action == 'k' or action == 'l':
-                print("You can't go that way")
-                action = input(prompt)
-
-            else:
-                action = input(valid_move)
+        action = self.dir()
+        if action == 'j':
+            return 'cabin_main_room'
 
 
-class CabinBedroom(object):
+class CabinBedroom(InitialRoom):
 
     def enter(self):
         if completed['cleaned_room'] == False:
+            self.directions = ['yes', 'no', 'help']
             print(dedent("""
                 The bedroom is messy
                 Do you clean it?
                 Cleaning the bedroom will increase your morality by 3
                 """))
-            action = input(prompt)
+            action = self.dir()
 
-            while True:
-                if action == 'yes':
-                    completed['cleaned_room'] = True
-                    player.morality += 3
-                    print(dedent(f"""
-                        You cleaned the room which made you feel really good
-                        There is nothing else to do in the room
-                        Your morality is {player.morality}
-                        """))
-                    break
-                elif action == 'no':
-                    player.morality -= 1
-                    print(dedent(f"""
-                        Ha!
-                        You left the room messy
-                        For doing such an evil thing you lost a morality point
-                        There is nothing else to do in the bedroom
-                        Your morality is {player.morality}
-                        """))
-                    break
-                else:
-                    action = input(valid_choice)
+            if action == 'yes':
+                completed['cleaned_room'] = True
+                player.morality += 3
+                print(dedent(f"""
+                    You cleaned the room which made you feel really good
+                    There is nothing else to do in the room
+                    Your morality is {player.morality}
+                    """))
+            elif action == 'no':
+                player.morality -= 1
+                print(dedent(f"""
+                    Ha!
+                    You left the room messy
+                    For doing such an evil thing you lost a morality point
+                    There is nothing else to do in the bedroom
+                    Your morality is {player.morality}
+                    """))
 
-            print("There is nothing else to do in the bedroom")
-            action = input(prompt)
+        self.directions = ['j', 'help']
+        print("There is nothing else to do in the bedroom")
+        action = self.dir()
 
-            while True:
-                if action == 'j':
-                    return 'cabin_main_room'
-
-                elif action == 'h' or action == 'k' or action == 'l':
-                    print("You can't go that way")
-                    action = input(prompt)
-
-                else:
-                    action = input(valid_move)
+        if action == 'j':
+            return 'cabin_main_room'
 
 
-class OutsideCabin(object):
+class OutsideCabin(InitialRoom):
     def enter(self):
+        self.directions = ['h', 'j', 'k', 'l', 'help']
         print(dedent("""
             It's a beautiful sunny day outside
             To your left is a river
             To your right is the woods
             Straight ahead is a village
              """))
-        action = input(prompt)
+        action = self.dir()
 
-        while True:
-            if action == 'h':
-                return 'river'
-            elif action == 'j':
-                return 'cabin_main_room'
-            elif action == 'k':
-                return 'village'
-            elif action == 'l':
-                return 'woods'
-            else:
-                action = input(valid_move)
+        if action == 'h':
+            return 'river'
+        elif action == 'j':
+            return 'cabin_main_room'
+        elif action == 'k':
+            return 'village'
+        elif action == 'l':
+            return 'woods'
 
 
-class River(object):
+class River(InitialRoom):
     def enter(self):
         if completed['kid_drowning'] == False:
+            self.directions = ['yes', 'no', 'help']
             print(dedent("""
                 Upon approaching the river you see a kid drowning
                 He's screaming for help
@@ -204,52 +179,43 @@ class River(object):
                 Type yes to save the kid from drowning
                 Type no to pretend like you didn't see him and return to outside the cabin
                 """))
-            action = input(prompt)
+            action = self.dir()
 
-            while True:
-                if action == 'yes':
-                    completed['kid_drowning'] = True
-                    player.morality += 10
-                    print(dedent(f"""
-                        You found some rope next to you and tossed an end to the kid
-                        You managed to pull him in and save his life
-                        He runs away thanking you
-                        This gave you 10 points of mortality
-                        Your morality is {player.morality}
-                        """))
-                    break
-                elif action == 'no':
-                    completed['kid_drowning'] = True
-                    player.morality -= 10
-                    print(dedent(f"""
-                        You casually just turn around and walk back to outside the cabin
-                        After a little while the kid stops screaming for help
-                        Shockingly you lose 10 points of morality
-                        Your morality is {player.morality}
-                        """))
-                    return 'outside_cabin'
-                else:
-                    action = input(valid_choice)
-
-        print("There is nothing to do here anymore")
-        action = input(prompt)
-
-        while True:
-            if action == 'j':
+            if action == 'yes':
+                completed['kid_drowning'] = True
+                player.morality += 10
+                print(dedent(f"""
+                    You found some rope next to you and tossed an end to the kid
+                    You managed to pull him in and save his life
+                    He runs away thanking you
+                    This gave you 10 points of mortality
+                    Your morality is {player.morality}
+                    """))
+            elif action == 'no':
+                completed['kid_drowning'] = True
+                player.morality -= 10
+                print(dedent(f"""
+                    You casually just turn around and walk back to outside the cabin
+                    After a little while the kid stops screaming for help
+                    Shockingly you lose 10 points of morality
+                    Your morality is {player.morality}
+                    """))
                 return 'outside_cabin'
 
-            elif action == 'h' or action == 'k' or action == 'l':
-                print("You can't go that way")
-                action = input(prompt)
+        self.directions = ['j', 'help']
+        print("There is nothing to do here anymore")
+        action = self.dir()
 
-            else:
-                action = input(valid_move)
+        if action == 'j':
+            return 'outside_cabin'
 
 
-class Village(object):
-    print(dedent("""
-        You enter the village and there's lots of people walking around
-        To your left is a brothel
-        To your right is an animal rescue center
-        In front of you is more of the village
-        """))
+class Village(InitialRoom):
+    def enter(self):
+        self.directions = ['h', 'l', 'j', 'k', 'help']
+        print(dedent("""
+            You enter the village and there's lots of people walking around
+            To your left is a brothel
+            To your right is an animal rescue center
+            In front of you is more of the village
+            """))
