@@ -3,6 +3,6 @@
 import engine
 import map
 
-area = map.Map('cabin')
-game = engine.Engine()
+area = map.Map('intro')
+game = engine.Engine(area)
 game.play()
