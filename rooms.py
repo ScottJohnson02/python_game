@@ -18,6 +18,19 @@ class InitialRoom(object):
     def dir(self):
         while True:
             action = input('~> ')
+            if action == 'help':
+                print(dedent("""
+                    The directions to move are as follows:
+                    h will move left
+                    j will move back
+                    k will move forward
+                    l will move right
+                    ---------------------------------------
+                    When presented with a choice to do something:
+                    yes will agree to something
+                    no will disagree to something
+                    """))
+                action = self.dir()
             if action in self.directions:
                 return action
             else:
@@ -25,7 +38,6 @@ class InitialRoom(object):
 
 class Introduction(InitialRoom):
     def enter(self):
-        self.directions = ['k']
         print(dedent("""
             This game will allow you to choose between good and bad
             Your choices will determine if you'll enter Heaven or Hell
@@ -42,8 +54,9 @@ class Introduction(InitialRoom):
             ---------------------------------------
             There's a magical door right in front of you
             """))
-
+        self.directions = ['k']
         action = self.dir()
+
         if action == 'k':
             print("The door you came out of slammed shut behind you and disappeared")
             return 'cabin_main_room'
@@ -51,14 +64,13 @@ class Introduction(InitialRoom):
 
 class CabinMainRoom(InitialRoom):
     def enter(self):
-        self.directions = ['k', 'l', 'j']
         print(dedent("""
             You are standing in the entrance of a cabin
             To your right there is a bathroom
             Behind you is a bedroom
             In front of you is a door to leave the cabin
             """))
-
+        self.directions = ['k', 'l', 'j']
         action = self.dir()
 
         if action == 'k':
@@ -113,7 +125,7 @@ class CabinBedroom(InitialRoom):
 
     def enter(self):
         if completed['cleaned_room'] == False:
-            self.directions = ['yes', 'no', 'help']
+            self.directions = ['yes', 'no']
             print(dedent("""
                 The bedroom is messy
                 Do you clean it?
@@ -139,7 +151,7 @@ class CabinBedroom(InitialRoom):
                     Your morality is {player.morality}
                     """))
 
-        self.directions = ['j', 'help']
+        self.directions = ['j']
         print("There is nothing else to do in the bedroom")
         action = self.dir()
 
@@ -149,13 +161,13 @@ class CabinBedroom(InitialRoom):
 
 class OutsideCabin(InitialRoom):
     def enter(self):
-        self.directions = ['h', 'j', 'k', 'l', 'help']
         print(dedent("""
             It's a beautiful sunny day outside
             To your left is a river
             To your right is the woods
             Straight ahead is a village
              """))
+        self.directions = ['h', 'j', 'k', 'l']
         action = self.dir()
 
         if action == 'h':
@@ -171,7 +183,7 @@ class OutsideCabin(InitialRoom):
 class River(InitialRoom):
     def enter(self):
         if completed['kid_drowning'] == False:
-            self.directions = ['yes', 'no', 'help']
+            self.directions = ['yes', 'no']
             print(dedent("""
                 Upon approaching the river you see a kid drowning
                 He's screaming for help
@@ -202,7 +214,7 @@ class River(InitialRoom):
                     """))
                 return 'outside_cabin'
 
-        self.directions = ['j', 'help']
+        self.directions = ['j']
         print("There is nothing to do here anymore")
         action = self.dir()
 
@@ -212,7 +224,7 @@ class River(InitialRoom):
 
 class Village(InitialRoom):
     def enter(self):
-        self.directions = ['h', 'l', 'j', 'k', 'help']
+        self.directions = ['h', 'l', 'j', 'k']
         print(dedent("""
             You enter the village and there's lots of people walking around
             To your left is a brothel
