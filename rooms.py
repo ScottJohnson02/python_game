@@ -5,6 +5,7 @@ from textwrap import dedent
 from player_stats import *
 prompt = "~> "
 valid_move = "Please choose a valid option -> (h, j, k, l)\n~>"
+valid_choice = "Please choose a valid option -> (yes, no)\n~>"
 # have classes pass through a parent to check if they can be entered
 
 # Tasks to be completed
@@ -68,15 +69,47 @@ class Bathroom(object):
     def enter(self):
         if completed['drugs'] == False:
             print(dedent("""
-                There is a drug in the bathroom that is only precribed to people with cancer
+                There is a pill in the bathroom that is only precribed to people with cancer
+                Taking it will get you really high
                 Do you take it?
                 Taking it will decrease your morality by 5
                 """))
             action = input(prompt)
-            if action == 'yes':
-                completed['drugs'] = True
-                player.morality -= 5
-                print(player.morality)
+
+            while True:
+                if action == 'yes':
+                    completed['drugs'] = True
+                    player.morality -= 5
+                    print(dedent("""
+                        After taking the pill your whole body feels amazing
+                        There is nothing else in the bathroom to use
+                        """))
+                    break
+
+                elif action == 'no':
+                    print(dedent("""
+                        You refrained from stealing drugs
+                        """))
+                    break
+                else:
+                    action = input(valid_choice)
+        
+        print(dedent("""
+            There is nothing else in the bathroom to use
+            All you can do is head back
+            """))
+
+        action = input(prompt)
+        while True:
+            if action == 'j':
+                return 'cabin_main_room'
+
+            elif action == 'h' or action == 'k' or action == 'l':
+                print("You can't go that way")
+                action = input(prompt)
+
+            else:
+                action = input(valid_move)
 
 class CabinBedroom(object):
 
