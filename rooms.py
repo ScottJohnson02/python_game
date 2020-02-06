@@ -9,7 +9,8 @@ prompt = "~> "
 completed = {
         'drugs': False,
         'cleaned_room': False,
-        'kid_drowning': False
+        'kid_drowning': False,
+        'cannibals': False
         }
 
 class InitialRoom(object):
@@ -20,6 +21,8 @@ class InitialRoom(object):
             action = input('~> ')
             if action == 'help':
                 print(dedent("""
+                    If at any point you are unsure of all available actions just type help
+                    ---------------------------------------
                     The directions to move are as follows:
                     h will move left
                     j will move back
@@ -180,6 +183,40 @@ class OutsideCabin(InitialRoom):
             return 'woods'
 
 
+class Woods(InitialRoom):
+    def enter(self):
+        if completed['cannibals'] == False:
+            print(dedent("""
+                You came upon a tribe of cannibals
+                Rather than eat you they want to see if you'll eat human meat
+                Eating the meat will decrease your morality by 5
+                Do you eat it?
+                """))
+            self.directions = ['yes', 'no']
+            action = self.dir()
+            if action == 'yes':
+                completed['cannibals'] = True
+                player.morality -= 5
+                print(dedent(f"""
+                    You ate the meat and feel full
+                    your new morality is {player.morality}
+                    They thank you for eating with them and you head back
+                    """))
+                return 'outside_cabin'
+            elif action == 'no':
+                print(dedent("""
+                    You screamed like a little girl and ran away from them
+                    """))
+                return 'outside_cabin'
+        print(dedent("""
+            You come back to the cannibal tribe and say hello to your friends
+            The only direction to go is back
+            """))
+        self.directions = ['j']
+        action = self.dir()
+        if action == 'j':
+            return 'outside_cabin'
+
 class River(InitialRoom):
     def enter(self):
         if completed['kid_drowning'] == False:
@@ -224,10 +261,32 @@ class River(InitialRoom):
 
 class Village(InitialRoom):
     def enter(self):
-        self.directions = ['h', 'l', 'j', 'k']
         print(dedent("""
             You enter the village and there's lots of people walking around
             To your left is a brothel
             To your right is an animal rescue center
             In front of you is more of the village
             """))
+        self.directions = ['h', 'l', 'j', 'k']
+        action = self.dir()
+
+        if action == 'h':
+            print(dedent(f"""
+                Woah there sonny!
+                You need a morality score of -50 to enter here
+                You currently have {player.morality}
+                """))
+            return 'village'
+        elif action == 'l':
+            print(dedent("""
+                You need a morality score of 50 to enter here
+                You currently have {player.morality}
+                """))
+            return 'village'
+        elif action == 'k':
+            print(dedent("""
+            Still needs developed
+            """))
+            return 'village'
+        elif action == 'j':
+            return 'outside_cabin'

@@ -10,7 +10,8 @@ class Map(object):
             'cabin_bedroom': CabinBedroom(),
             'outside_cabin': OutsideCabin(),
             'river': River(),
-            'village': Village()
+            'village': Village(),
+            'woods': Woods()
             }
 
 
