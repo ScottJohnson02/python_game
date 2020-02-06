@@ -6,8 +6,10 @@ class Map(object):
     room_names = {
             'intro': Introduction(),
             'cabin_main_room': CabinMainRoom(),
-            'cabin_bathroom': Bathroom(),
-            'cabin_bedroom': CabinBedroom()
+            'cabin_bathroom': CabinBathroom(),
+            'cabin_bedroom': CabinBedroom(),
+            'outside_cabin': OutsideCabin(),
+            'river': River()
             }
 
 
