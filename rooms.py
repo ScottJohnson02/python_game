@@ -8,13 +8,12 @@ valid_move = "Please choose a valid option -> (h, j, k, l)\n~> "
 valid_choice = "Please choose a valid option -> (yes, no)\n~> "
 # have classes pass through a parent to check if they can be entered
 
-# Tasks to be completed
-
 completed = {
         'drugs': False,
         'cleaned_room': False,
         'kid_drowning': False
         }
+
 
 class Introduction(object):
     def enter(self):
@@ -70,7 +69,7 @@ class CabinMainRoom(object):
             else:
                 action = input(valid_move)
 
-# Cabin Bathroom
+
 class CabinBathroom(object):
     
     def enter(self):
@@ -122,6 +121,7 @@ class CabinBathroom(object):
             else:
                 action = input(valid_move)
 
+
 class CabinBedroom(object):
 
     def enter(self):
@@ -169,6 +169,8 @@ class CabinBedroom(object):
 
                 else:
                     action = input(valid_move)
+
+
 class OutsideCabin(object):
     def enter(self):
         print(dedent("""
@@ -190,6 +192,7 @@ class OutsideCabin(object):
                 return 'woods'
             else:
                 action = input(valid_move)
+
 
 class River(object):
     def enter(self):
@@ -241,3 +244,12 @@ class River(object):
 
             else:
                 action = input(valid_move)
+
+
+class Village(object):
+    print(dedent("""
+        You enter the village and there's lots of people walking around
+        To your left is a brothel
+        To your right is an animal rescue center
+        In front of you is more of the village
+        """))
